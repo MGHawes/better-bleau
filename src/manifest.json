@@ -4,7 +4,23 @@
   "description": "A plugin to add grade and problem type breakdown charts to bleau.info!",
   "content_scripts": [
     {
-      "matches": ["*://*.bleau.info/*"],
+      "matches": ["*://bleau.info/*"],
+      "exclude_matches": [
+        "*://bleau.info/",
+        "*://bleau.info/*/*.html",
+        "*://bleau.info/profiles/*",
+        "*://bleau.info/profile/*",
+        "*://bleau.info/map/*",
+        "*://bleau.info/search/*",
+        "*://bleau.info/advanced-search/*",
+        "*://bleau.info/areas_by_region/*",
+        "*://bleau.info/account/*",
+        "*://bleau.info/my_updates/*",
+        "*://bleau.info/about/*",
+        "*://bleau.info/ethics/*",
+        "*://bleau.info/ticklist/*",
+        "*://bleau.info/contribute/*"
+      ],
       "js": ["content.js"]
     }
   ],
