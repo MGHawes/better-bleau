@@ -1,0 +1,21 @@
+{
+  "name": "bleau-plugin",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "build": "webpack"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "apexcharts": "^3.11.3",
+    "lodash": "^4.17.15"
+  },
+  "devDependencies": {
+    "copy-webpack-plugin": "^5.1.1",
+    "webpack": "^4.40.0",
+    "webpack-cli": "^3.3.9"
+  }
+}
