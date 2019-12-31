@@ -2,9 +2,9 @@ const path = require('path');
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 module.exports = {
-  entry: './src/content.js',
+  entry: './src/index.js',
   output: {
-    filename: 'content.js',
+    filename: 'index.js',
     path: path.resolve(__dirname, 'dist'),
   },
   plugins: [
