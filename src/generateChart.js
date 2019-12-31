@@ -30,7 +30,7 @@ export function generateChart () {
   )
 
   const newElement = createChartElement(rightColumn)
-  const chartBarslength = newElement - APPROXIMATE_LABEL_WIDTH_IN_PIXELS
+  const chartBarsLength = newElement.clientWidth - APPROXIMATE_LABEL_WIDTH_IN_PIXELS
   const options = {
       chart: {
         type: "bar",
@@ -49,7 +49,7 @@ export function generateChart () {
         enabled: true,
         formatter: val => 
           // HACK HACK: Labels render even when there isn't enough room in the bar
-          (val / maxCount) > (SMALLEST_VISIBLE_LABEL_WIDTH_IN_PIXELS / chartBarslength)
+          (val / maxCount) > (SMALLEST_VISIBLE_LABEL_WIDTH_IN_PIXELS / chartBarsLength)
             ? val.toString() : "",
       },
       series: reverse(chartSeries),
@@ -68,9 +68,10 @@ const createChartElement = rightColumn => {
   chartElement.className = "row"
   chartElement.style.width = "100%"
   if (rightColumn.children.length < 2) {
-    return
+    rightColumn.appendChild(chartElement)
+  } else {
+    rightColumn.insertBefore(chartElement, rightColumn.children[1]);
   }
-  rightColumn.insertBefore(chartElement, rightColumn.children[1]);
   
   return chartElement
 }
