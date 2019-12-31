@@ -8,6 +8,7 @@
 // There is on-going work to provide a comprehensive typed definition for this component.
 // See https://github.com/DefinitelyTyped/DefinitelyTyped/pull/28733
 
+/* tslint:disable */
 declare class ApexCharts {
     constructor(el: any, options: any)
     render(): Promise<void>
@@ -43,7 +44,7 @@ declare class ApexCharts {
     static initOnLoad(): void
   }
   
-  declare module ApexCharts {
+declare module ApexCharts {
     export interface ApexOptions {
       annotations?: ApexAnnotations
       chart?: ApexChart
@@ -69,7 +70,7 @@ declare class ApexCharts {
     }
   }
   
-  type ApexDropShadow = {
+interface ApexDropShadow {
     enabled?: boolean
     top?: number
     left?: number
@@ -81,7 +82,7 @@ declare class ApexCharts {
    * Main Chart options
    * See https://apexcharts.com/docs/options/chart/
    */
-  type ApexChart = {
+interface ApexChart {
     width?: string | number
     height?: string | number
     type?:
@@ -204,7 +205,7 @@ declare class ApexCharts {
     }
   }
   
-  type ApexStates = {
+interface ApexStates {
     normal?: {
       filter?: {
         type?: string
@@ -230,7 +231,7 @@ declare class ApexCharts {
    * Chart Title options
    * See https://apexcharts.com/docs/options/title/
    */
-  type ApexTitleSubtitle = {
+interface ApexTitleSubtitle {
     text?: string
     align?: 'left' | 'center' | 'right'
     margin?: number
@@ -256,23 +257,23 @@ declare class ApexCharts {
    * Sections 2.2 and 3.2: data can be a list of objects where x is a string
    * and y is a number
    */
-  type ApexAxisChartSeries = {
+type ApexAxisChartSeries = Array<{
     name: string
     type?: string
     data:
       | number[]
-      | { x: any; y: any }[]
-      | [number, number][]
-      | [number, number[]][]
-  }[]
+      | Array<{ x: any; y: any }>
+      | Array<[number, number]>
+      | Array<[number, number[]]>
+  }>
   
-  type ApexNonAxisChartSeries = number[]
+type ApexNonAxisChartSeries = number[]
   
   /**
    * Options for the line drawn on line and area charts.
    * See https://apexcharts.com/docs/options/stroke/
    */
-  type ApexStroke = {
+interface ApexStroke {
     show?: boolean
     curve?: 'smooth' | 'straight' | 'stepline'
     lineCap?: 'butt' | 'square' | 'round'
@@ -281,14 +282,14 @@ declare class ApexCharts {
     dashArray?: number | number[]
   }
   
-  type ApexAnnotations = {
+interface ApexAnnotations {
     position?: string
     yaxis?: YAxisAnnotations[]
     xaxis?: XAxisAnnotations[]
     points?: PointAnnotations[]
   }
   
-  type AnnotationLabel = {
+interface AnnotationLabel {
     borderColor?: string
     borderWidth?: number
     text?: string
@@ -300,7 +301,7 @@ declare class ApexCharts {
     orientation?: string
   }
   
-  type AnnotationStyle = {
+interface AnnotationStyle {
     background?: string
     color?: string
     fontFamily?: string
@@ -314,7 +315,7 @@ declare class ApexCharts {
     }
   }
   
-  type XAxisAnnotations = {
+interface XAxisAnnotations {
     x?: number | string
     x2?: null | number
     strokeDashArray?: number
@@ -327,7 +328,7 @@ declare class ApexCharts {
     label?: AnnotationLabel
   }
   
-  type YAxisAnnotations = {
+interface YAxisAnnotations {
     y?: null | number
     y2?: null | number
     strokeDashArray?: number
@@ -341,7 +342,7 @@ declare class ApexCharts {
     label?: AnnotationLabel
   }
   
-  type PointAnnotations = {
+interface PointAnnotations {
     x?: number | string
     y?: null | number
     yAxisIndex?: number
@@ -364,7 +365,7 @@ declare class ApexCharts {
    * Options for localization.
    * See https://apexcharts.com/docs/options/chart/locales
    */
-  type ApexLocale = {
+interface ApexLocale {
     name?: string
     options?: {
       months?: string[]
@@ -387,7 +388,7 @@ declare class ApexCharts {
    * PlotOptions for specifying chart-type-specific configuration.
    * See https://apexcharts.com/docs/options/plotoptions/bar/
    */
-  type ApexPlotOptions = {
+interface ApexPlotOptions {
     bar?: {
       horizontal?: boolean
       endingShape?: 'flat' | 'rounded'
@@ -395,11 +396,11 @@ declare class ApexCharts {
       barHeight?: string
       distributed?: boolean
       colors?: {
-        ranges?: {
+        ranges?: Array<{
           from?: number
           to?: number
           color?: string
-        }[]
+        }>
         backgroundBarColors?: string[]
         backgroundBarOpacity?: number
       }
@@ -430,12 +431,12 @@ declare class ApexCharts {
       reverseNegativeShade?: boolean
       distributed?: boolean
       colorScale?: {
-        ranges?: {
+        ranges?: Array<{
           from?: number
           to?: number
           color?: string
           name?: string
-        }[]
+        }>
         inverse?: boolean
         min?: number
         max?: number
@@ -550,7 +551,7 @@ declare class ApexCharts {
     }
   }
   
-  type ApexFill = {
+interface ApexFill {
     colors?: any[]
     opacity?: number | number[]
     type?: string
@@ -581,7 +582,7 @@ declare class ApexCharts {
    * Chart Legend configuration options.
    * See https://apexcharts.com/docs/options/legend/
    */
-  type ApexLegend = {
+interface ApexLegend {
     show?: boolean
     showForSingleSeries?: boolean
     showForNullSeries?: boolean
@@ -631,7 +632,7 @@ declare class ApexCharts {
     }
   }
   
-  type ApexDiscretePoint = {
+interface ApexDiscretePoint {
     seriesIndex?: number
     dataPointIndex?: number
     fillColor?: string
@@ -639,7 +640,7 @@ declare class ApexCharts {
     size?: number
   }
   
-  type ApexMarkers = {
+interface ApexMarkers {
     size?: number
     colors?: string[]
     strokeColor?: string | string[]
@@ -659,7 +660,7 @@ declare class ApexCharts {
     }
   }
   
-  type ApexNoData = {
+interface ApexNoData {
     text?: string
     align?: 'left' | 'right' | 'center'
     verticalAlign?: 'top' | 'middle' | 'bottom'
@@ -676,7 +677,7 @@ declare class ApexCharts {
    * Chart Datalabels options
    * See https://apexcharts.com/docs/options/datalabels/
    */
-  type ApexDataLabels = {
+interface ApexDataLabels {
     enabled?: boolean
     enabledOnSeries?: undefined | boolean
     textAnchor?: 'start' | 'middle' | 'end'
@@ -691,7 +692,7 @@ declare class ApexCharts {
     formatter?(val: number, opts?: any): string
   }
   
-  type ApexResponsive = {
+interface ApexResponsive {
     breakpoint?: number
     options?: any
   }
@@ -700,14 +701,14 @@ declare class ApexCharts {
    * Chart Tooltip options
    * See https://apexcharts.com/docs/options/tooltip/
    */
-  type ApexTooltip = {
+interface ApexTooltip {
     enabled?: boolean
     enabledOnSeries?: undefined | boolean
     shared?: boolean
     followCursor?: boolean
     intersect?: boolean
     inverseOrder?: boolean
-    custom?: ((options: any) => any) | ((options: any) => any)[]
+    custom?: ((options: any) => any) | Array<(options: any) => any>
     fillSeriesColor?: boolean
     theme?: string
     style?: {
@@ -751,7 +752,7 @@ declare class ApexCharts {
    * X Axis options
    * See https://apexcharts.com/docs/options/xaxis/
    */
-  type ApexXAxis = {
+interface ApexXAxis {
     type?: 'category' | 'datetime' | 'numeric'
     categories?: string[] | number[]
     labels?: {
@@ -852,7 +853,7 @@ declare class ApexCharts {
    * See https://apexcharts.com/docs/options/yaxis/
    */
   
-  type ApexYAxis = {
+interface ApexYAxis {
     show?: boolean
     showAlways?: boolean
     seriesName?: string
@@ -926,7 +927,7 @@ declare class ApexCharts {
    * Plot X and Y grid options
    * See https://apexcharts.com/docs/options/grid/
    */
-  type ApexGrid = {
+interface ApexGrid {
     show?: boolean
     borderColor?: string
     strokeDashArray?: number
@@ -961,7 +962,7 @@ declare class ApexCharts {
     }
   }
   
-  type ApexTheme = {
+interface ApexTheme {
     mode?: 'light' | 'dark'
     palette?: string
     monochrome?: {
@@ -972,7 +973,7 @@ declare class ApexCharts {
     }
   }
   
-  declare module 'apexcharts' {
+declare module 'apexcharts' {
     export = ApexCharts
   }
   

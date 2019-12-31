@@ -4,7 +4,8 @@
   "description": "A chrome extension to add grade and problem type breakdown charts to bleau.info!",
   "private": true,
   "scripts": {
-    "build": "webpack"
+    "build": "webpack",
+    "lint": "tslint -c tslint.json 'src/**/*.ts'"
   },
   "keywords": [],
   "author": "",
