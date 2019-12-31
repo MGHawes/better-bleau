@@ -1,5 +1,5 @@
 import ApexCharts from 'apexcharts';
-import { flatMap, countBy, map, sortBy, mapValues, reverse } from 'lodash';
+import { flatMap, countBy, map, sortBy, mapValues, reverse, groupBy } from 'lodash';
 
 const NUM_CLIMB_TYPES_TO_SHOW = 10
 const APPROXIMATE_LABEL_WIDTH_IN_PIXELS = 50
@@ -7,10 +7,11 @@ const SMALLEST_VISIBLE_LABEL_WIDTH_IN_PIXELS = 25
 
 export function generateChart () {
   const [leftColumn, rightColumn] = getRightAndLeftColumns()
-
-  const climbContainerElementsByGrade = groupByGrade(leftColumn)
+  const rawClimbs = extractClimbsFromDom(leftColumn)
+  const climbDomElementsByGrade = groupByGrade(rawClimbs)
+  
   const climbTypesByGrade = mapValues(
-    climbContainerElementsByGrade,
+    climbDomElementsByGrade,
     elements => flatMap(elements, getClimbTypes)
   )
   const topClimbTypes = getTopNClimbTypes(climbTypesByGrade, NUM_CLIMB_TYPES_TO_SHOW)
@@ -103,25 +104,28 @@ const getRightAndLeftColumns = () => {
 const isClimbContainerElement = elem => elem.tagName === "DIV" && elem.className === "vsr"
 const isGradeHeadingElement = elem => elem.tagName === "H4"
 
-const groupByGrade = leftColumn => {
-  const climbContainersByGrades = {}
-  let currentGrade
-  for (const elem of leftColumn.children) {
-    if (isGradeHeadingElement(elem)) {
-      currentGrade = getGrade(elem.innerText)
-
-      if (climbContainersByGrades[currentGrade] == null) {
-        climbContainersByGrades[currentGrade] = []
-      }
-    } else if (isClimbContainerElement(elem) && currentGrade != null) {
-      climbContainersByGrades[currentGrade].push(elem)
-    }
-  }
-
-  return climbContainersByGrades
+const groupByGrade = rawClimbs => {
+  const climbDomElementsByGrade = mapValues(
+    groupBy(rawClimbs, ({ gradeText }) => parseGrade(gradeText)),
+    climbs => map(climbs, "element"),
+  )
+  return climbDomElementsByGrade
 }
 
-const getGrade = gradeText => {
+const extractClimbsFromDom = leftColumn => {
+  const climbs = []
+  let gradeText
+  for (const element of leftColumn.children) {
+    if (isGradeHeadingElement(element)) {
+      gradeText = element.innerText.trim()
+    } else if (isClimbContainerElement(element) && gradeText != null) {
+      climbs.push({ gradeText, element })
+    }
+  }
+  return climbs
+}
+
+const parseGrade = gradeText => {
   const grade = Number(gradeText.trim().slice(0, 1))
   if (isNaN(grade)) {
     return "Unknown"
