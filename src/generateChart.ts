@@ -38,43 +38,48 @@ export function generateChart () {
   renderChart(chartElement, chartSeries, chartXAxisCategories, maxCount)
 }
 
-function toTitleCase(str) {
+function toTitleCase(str: string): string {
   return str.replace(
       /\w\S*/g,
       txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
   );
 }
 
-const renderChart = (chartElement, chartSeries, categories, maxCount) => {
-  const chartBarsLength = chartElement.clientWidth - APPROXIMATE_LABEL_WIDTH_IN_PIXELS
-  const options = {
-      chart: {
-        type: "bar",
-        height: 350,
-        stacked: true,
-        toolbar: {
-          show: true
+const renderChart = (
+    chartElement: HTMLDivElement,
+    chartSeries: { name: string; data: number[]; }[],
+    categories: string[],
+    maxCount: number
+  ) => {
+    const chartBarsLength = chartElement.clientWidth - APPROXIMATE_LABEL_WIDTH_IN_PIXELS
+    const options = {
+        chart: {
+          type: "bar",
+          height: 350,
+          stacked: true,
+          toolbar: {
+            show: true
+          },
         },
-      },
-      plotOptions: {
-        bar: {
-          horizontal: true,
+        plotOptions: {
+          bar: {
+            horizontal: true,
+          },
         },
-      },
-      dataLabels: {
-        enabled: true,
-        formatter: val => 
-          // HACK HACK: Labels render even when there isn't enough room in the bar
-          (val / maxCount) > (SMALLEST_VISIBLE_LABEL_WIDTH_IN_PIXELS / chartBarsLength)
-            ? val.toString() : "",
-      },
-      series: chartSeries,
-      xaxis: {
-        categories,
+        dataLabels: {
+          enabled: true,
+          formatter: val => 
+            // HACK HACK: Labels render even when there isn't enough room in the bar
+            (val / maxCount) > (SMALLEST_VISIBLE_LABEL_WIDTH_IN_PIXELS / chartBarsLength)
+              ? val.toString() : "",
+        },
+        series: chartSeries,
+        xaxis: {
+          categories,
+        }
       }
-    }
-      
-  const chart = new ApexCharts(chartElement, options);
+        
+    const chart = new ApexCharts(chartElement, options);
 
-  chart.render();
+    chart.render();
 }
