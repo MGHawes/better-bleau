@@ -1,4 +1,4 @@
-export const CHART_ID = "chart"
+export const CHART_ID = "chart";
 export interface IRawClimb {
   gradeText: string;
   climbTypesString: string;
@@ -21,7 +21,7 @@ export interface IGradeHeader {
   element: HTMLHeadingElement;
   gradeText: string;
 }
-export const extractGradeHeaderFromDom = leftColumn => {
+export const extractGradeHeaderFromDom = (leftColumn) => {
   const gradeHeaders: IGradeHeader[] = [];
   for (const element of leftColumn.children) {
       if (isGradeHeadingElement(element)) {
@@ -30,7 +30,7 @@ export const extractGradeHeaderFromDom = leftColumn => {
       }
   }
   return gradeHeaders;
-}
+};
 
 const extractClimbTypesString = (elem: Element): string => {
   const typesElem = elem.querySelector<HTMLParagraphElement>(".btype");
@@ -54,7 +54,7 @@ export const getRightAndLeftColumns = (): [HTMLDivElement, HTMLDivElement] => {
   return [leftColumn, rightColumn];
 };
 
-interface IChartContainer { 
+interface IChartContainer {
   chartContainerElement: HTMLDivElement;
   resetSelectionButton: HTMLDivElement;
 }
@@ -66,12 +66,12 @@ export const createChartContainer = (rightColumn: Element): IChartContainer => {
   const resetSelectionButton = document.createElement("div");
   // ToDo use css for these
   resetSelectionButton.style.width = "100%";
-  resetSelectionButton.innerText = "Clear selection"
-  resetSelectionButton.style.textAlign = "right"
-  resetSelectionButton.style.color = "#777777"
-  resetSelectionButton.style.zIndex = "10"
-  resetSelectionButton.style.position = "relative"
-  resetSelectionButton.style.cursor = "pointer"
+  resetSelectionButton.innerText = "Clear selection";
+  resetSelectionButton.style.textAlign = "right";
+  resetSelectionButton.style.color = "#777777";
+  resetSelectionButton.style.zIndex = "10";
+  resetSelectionButton.style.position = "relative";
+  resetSelectionButton.style.cursor = "pointer";
   chartContainer.appendChild(resetSelectionButton);
 
   if (rightColumn.children.length < 2) {
@@ -86,12 +86,12 @@ export const createChartContainer = (rightColumn: Element): IChartContainer => {
 export const createChartElement = (chartContainerElement: HTMLDivElement) => {
   const chartElement = document.createElement("div");
   chartElement.style.width = "100%";
-  chartElement.style.marginTop = "-30px"
-  chartElement.style.position = "relative"
+  chartElement.style.marginTop = "-30px";
+  chartElement.style.position = "relative";
   chartContainerElement.appendChild(chartElement);
-  
+
   return chartElement;
-}
+};
 
 const isClimbContainerElement = (elem: Element): elem is HTMLDivElement =>
   elem.tagName === "DIV" && elem.className === "vsr";

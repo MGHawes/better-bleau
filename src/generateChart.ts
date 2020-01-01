@@ -1,7 +1,7 @@
 import ApexCharts from "apexcharts";
 import { countBy, flatMap, groupBy, map, mapValues, reverse, some } from "lodash";
 import { getTopNClimbTypes, parseClimbTypesString, parseGradeText } from "./dataProcessing";
-import { createChartContainer, extractClimbsFromDom, getRightAndLeftColumns, createChartElement, extractGradeHeaderFromDom } from "./domInteraction";
+import { createChartContainer, createChartElement, extractClimbsFromDom, extractGradeHeaderFromDom, getRightAndLeftColumns } from "./domInteraction";
 
 const NUM_CLIMB_TYPES_TO_SHOW = 10;
 const APPROXIMATE_LABEL_WIDTH_IN_PIXELS = 50;
@@ -13,15 +13,15 @@ export function generateChart() {
   const rawGradeHeaders = extractGradeHeaderFromDom(leftColumn);
 
   const climbsWithGradeAndTypes = rawClimbs.map(
-    climb => ({
+    (climb) => ({
       ...climb,
       grade: parseGradeText(climb.gradeText),
-      types: parseClimbTypesString(climb.climbTypesString)
+      types: parseClimbTypesString(climb.climbTypesString),
     }
-  ))
+  ));
   const climbTypesByGrade = mapValues(
     groupBy(climbsWithGradeAndTypes, "grade"),
-    (climbs) => flatMap(climbs, climb => climb.types),
+    (climbs) => flatMap(climbs, (climb) => climb.types),
   );
 
   const topClimbTypes = getTopNClimbTypes(climbTypesByGrade, NUM_CLIMB_TYPES_TO_SHOW);
@@ -42,29 +42,29 @@ export function generateChart() {
   ));
 
   const chartXAxisCategories = topClimbTypes.map(([type, _]) => type);
-  const onSelectBar = (e: any, chart: any, options: { selectedDataPoints : any}) => {
-    const { selectedGrades, selectedGradeTypePairs } = parseChartSelection(options.selectedDataPoints, chartSeries, chartXAxisCategories)    
-    
+  const onSelectBar = (e: any, chart: any, options: { selectedDataPoints: any}) => {
+    const { selectedGrades, selectedGradeTypePairs } = parseChartSelection(options.selectedDataPoints, chartSeries, chartXAxisCategories);
+
     const isSelected = selectedGradeTypePairs.size === 0
       ? () => true
-      : climb => some(climb.types.map(type => selectedGradeTypePairs.has([climb.grade, type].toString())))
+      : (climb) => some(climb.types.map((type) => selectedGradeTypePairs.has([climb.grade, type].toString())));
 
-    climbsWithGradeAndTypes.forEach(climb => climb.element.style.display = isSelected(climb) ? "block" : "none")
-    rawGradeHeaders.forEach(header => 
-      header.element.style.display = selectedGrades.has(parseGradeText(header.gradeText)) ? "block" : "none")
-  }
+    climbsWithGradeAndTypes.forEach((climb) => climb.element.style.display = isSelected(climb) ? "block" : "none");
+    rawGradeHeaders.forEach((header) =>
+      header.element.style.display = selectedGrades.has(parseGradeText(header.gradeText)) ? "block" : "none");
+  };
   const { chartContainerElement, resetSelectionButton } = createChartContainer(rightColumn);
-  const chartElement = createChartElement(chartContainerElement)
+  const chartElement = createChartElement(chartContainerElement);
   let chart = renderChart(chartElement, chartSeries, chartXAxisCategories, maxCount, onSelectBar);
 
   // HACK HACK: Needed to reset chart selection in one go
   const hardRefreshSelection = () => {
     chart.destroy();
     chart = renderChart(chartElement, chartSeries, chartXAxisCategories, maxCount, onSelectBar);
-    climbsWithGradeAndTypes.forEach(climb => climb.element.style.display = "block")
-    rawGradeHeaders.forEach(header => header.element.style.display = "block")
-  }
-  resetSelectionButton.addEventListener("click", hardRefreshSelection)
+    climbsWithGradeAndTypes.forEach((climb) => climb.element.style.display = "block");
+    rawGradeHeaders.forEach((header) => header.element.style.display = "block");
+  };
+  resetSelectionButton.addEventListener("click", hardRefreshSelection);
 }
 
 function toTitleCase(str: string): string {
@@ -79,7 +79,7 @@ const renderChart = (
     chartSeries: Array<{ name: string; data: number[]; }>,
     categories: string[],
     maxCount: number,
-    onSelectBar: (e: any, chart: any, options: { selectedDataPoints : any}) => void,
+    onSelectBar: (e: any, chart: any, options: { selectedDataPoints: any}) => void,
   ) => {
     const chartBarsLength = chartElement.clientWidth - APPROXIMATE_LABEL_WIDTH_IN_PIXELS;
     const options = {
@@ -93,7 +93,7 @@ const renderChart = (
           },
           toolbar: {
             show: false,
-          }
+          },
         },
         plotOptions: {
           bar: {
@@ -102,7 +102,7 @@ const renderChart = (
         },
         dataLabels: {
           enabled: true,
-          formatter: val =>
+          formatter: (val) =>
             // HACK HACK: Labels render even when there isn't enough room in the bar
             (val / maxCount) > (SMALLEST_VISIBLE_LABEL_WIDTH_IN_PIXELS / chartBarsLength)
               ? val.toString() : "",
@@ -114,7 +114,7 @@ const renderChart = (
         states: {
           active: {
             allowMultipleDataPointsSelection: true,
-          }
+          },
         },
       };
 
@@ -122,24 +122,24 @@ const renderChart = (
 
     chart.render();
 
-    return chart
+    return chart;
 };
 
 const parseChartSelection = (
   selectedDataPoints: number[][],
-  chartSeries: { name: string }[],
+  chartSeries: Array<{ name: string }>,
   xAxisCategories: string[],
   ) => {
-    const selectedGrades = new Set()
-    const selectedGradeTypePairs = new Set()
+    const selectedGrades = new Set();
+    const selectedGradeTypePairs = new Set();
 
     selectedDataPoints.forEach((seriesPoints: number[], seriesIndex: number) => {
       const grade = chartSeries[seriesIndex].name;
       if (seriesPoints.length > 0) {
-        selectedGrades.add(grade)
+        selectedGrades.add(grade);
       }
-      seriesPoints.forEach(pointIndex => selectedGradeTypePairs.add([grade, xAxisCategories[pointIndex]].toString()))
-    })
+      seriesPoints.forEach((pointIndex) => selectedGradeTypePairs.add([grade, xAxisCategories[pointIndex]].toString()));
+    });
 
-    return { selectedGrades, selectedGradeTypePairs }
-}
+    return { selectedGrades, selectedGradeTypePairs };
+};
