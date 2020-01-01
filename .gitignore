@@ -3,3 +3,7 @@ node_modules/
 
 yarn-debug.log*
 yarn-error.log*
+
+.DS_Store
+
+better-bleau.zip
