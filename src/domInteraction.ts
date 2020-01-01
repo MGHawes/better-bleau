@@ -1,4 +1,4 @@
-
+export const CHART_ID = "chart"
 export interface IRawClimb {
   gradeText: string;
   climbTypesString: string;
@@ -16,6 +16,21 @@ export const extractClimbsFromDom = (leftColumn: HTMLDivElement): IRawClimb[] =>
   }
   return climbs;
 };
+
+export interface IGradeHeader {
+  element: HTMLHeadingElement;
+  gradeText: string;
+}
+export const extractGradeHeaderFromDom = leftColumn => {
+  const gradeHeaders: IGradeHeader[] = [];
+  for (const element of leftColumn.children) {
+      if (isGradeHeadingElement(element)) {
+        const gradeText = element.innerText.trim();
+        gradeHeaders.push({ gradeText, element });
+      }
+  }
+  return gradeHeaders;
+}
 
 const extractClimbTypesString = (elem: Element): string => {
   const typesElem = elem.querySelector<HTMLParagraphElement>(".btype");
@@ -39,18 +54,44 @@ export const getRightAndLeftColumns = (): [HTMLDivElement, HTMLDivElement] => {
   return [leftColumn, rightColumn];
 };
 
-export const createChartElement = (rightColumn: Element): HTMLDivElement => {
-  const chartElement = document.createElement("div");
-  chartElement.className = "row";
-  chartElement.style.width = "100%";
+interface IChartContainer { 
+  chartContainerElement: HTMLDivElement;
+  resetSelectionButton: HTMLDivElement;
+}
+export const createChartContainer = (rightColumn: Element): IChartContainer => {
+  const chartContainer = document.createElement("div");
+  chartContainer.className = "row";
+  chartContainer.style.width = "100%";
+
+  const resetSelectionButton = document.createElement("div");
+  // ToDo use css for these
+  resetSelectionButton.style.width = "100%";
+  resetSelectionButton.innerText = "Clear selection"
+  resetSelectionButton.style.textAlign = "right"
+  resetSelectionButton.style.color = "#777777"
+  resetSelectionButton.style.zIndex = "10"
+  resetSelectionButton.style.position = "relative"
+  resetSelectionButton.style.cursor = "pointer"
+  chartContainer.appendChild(resetSelectionButton);
+
   if (rightColumn.children.length < 2) {
-    rightColumn.appendChild(chartElement);
+    rightColumn.appendChild(chartContainer);
   } else {
-    rightColumn.insertBefore(chartElement, rightColumn.children[1]);
+    rightColumn.insertBefore(chartContainer, rightColumn.children[1]);
   }
 
-  return chartElement;
+  return { chartContainerElement: chartContainer, resetSelectionButton };
 };
+
+export const createChartElement = (chartContainerElement: HTMLDivElement) => {
+  const chartElement = document.createElement("div");
+  chartElement.style.width = "100%";
+  chartElement.style.marginTop = "-30px"
+  chartElement.style.position = "relative"
+  chartContainerElement.appendChild(chartElement);
+  
+  return chartElement;
+}
 
 const isClimbContainerElement = (elem: Element): elem is HTMLDivElement =>
   elem.tagName === "DIV" && elem.className === "vsr";

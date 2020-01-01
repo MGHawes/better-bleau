@@ -1,5 +1,4 @@
 import { countBy, flatMap, map, sortBy } from "lodash";
-import { IRawClimb } from "./domInteraction";
 
 export const getTopNClimbTypes = (
     climbTypesByGrade: { [grade: string]: string[] },
@@ -29,7 +28,7 @@ export const parseGradeText = (gradeText: string): string => {
 
 const parseClimbType = (typeString: string): string => {
   const type = typeString.trim();
-  if (type.search(/[Tt]raverse/) !== -1) {
+  if (type.search(/[Tt]raverse/) >= 0) {
     return "traverse";
   }
   return type;
