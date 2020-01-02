@@ -1,20 +1,23 @@
+import { IClimb, processRawClimbs } from "./dataProcessing";
+
 export const CHART_ID = "chart";
 export interface IRawClimb {
   gradeText: string;
   climbTypesString: string;
   element: HTMLDivElement;
 }
-export const extractClimbsFromDom = (leftColumn: HTMLDivElement): IRawClimb[] => {
-  const climbs: IRawClimb[] = [];
+export const extractClimbsFromDom = (leftColumn: HTMLDivElement): IClimb[] => {
+  const rawClimbs: IRawClimb[] = [];
   let gradeText: any;
   for (const element of leftColumn.children) {
       if (isGradeHeadingElement(element)) {
       gradeText = element.innerText.trim();
     } else if (isClimbContainerElement(element) && gradeText != null) {
-      climbs.push({ gradeText, climbTypesString: extractClimbTypesString(element), element });
+      rawClimbs.push({ gradeText, climbTypesString: extractClimbTypesString(element), element });
     }
   }
-  return climbs;
+
+  return processRawClimbs(rawClimbs);
 };
 
 export interface IGradeHeader {
@@ -54,41 +57,31 @@ export const getRightAndLeftColumns = (): [HTMLDivElement, HTMLDivElement] => {
   return [leftColumn, rightColumn];
 };
 
-interface IChartContainer {
-  chartContainerElement: HTMLDivElement;
-  resetSelectionButton: HTMLDivElement;
-}
-export const createChartContainer = (rightColumn: Element): IChartContainer => {
-  const chartContainer = document.createElement("div");
-  chartContainer.className = "row";
-  chartContainer.style.width = "100%";
+let chartContainer;
+export const createChartElement = (rightColumn: Element): HTMLElement => {
+  if (!chartContainer) {
+    chartContainer = document.createElement("div");
+    chartContainer.className = "row";
+    chartContainer.style.width = "100%";
 
-  const resetSelectionButton = document.createElement("div");
-  // ToDo use css for these
-  resetSelectionButton.style.width = "100%";
-  resetSelectionButton.innerText = "Clear selection";
-  resetSelectionButton.style.textAlign = "right";
-  resetSelectionButton.style.color = "#777777";
-  resetSelectionButton.style.zIndex = "10";
-  resetSelectionButton.style.position = "relative";
-  resetSelectionButton.style.cursor = "pointer";
-  chartContainer.appendChild(resetSelectionButton);
-
-  if (rightColumn.children.length < 2) {
-    rightColumn.appendChild(chartContainer);
-  } else {
-    rightColumn.insertBefore(chartContainer, rightColumn.children[1]);
+    if (rightColumn.children.length < 2) {
+      rightColumn.appendChild(chartContainer);
+    } else {
+      rightColumn.insertBefore(chartContainer, rightColumn.children[1]);
+    }
   }
 
-  return { chartContainerElement: chartContainer, resetSelectionButton };
-};
+  const oldElement = document.getElementById(CHART_ID);
+  if (oldElement) {
+    oldElement.remove();
+  }
 
-export const createChartElement = (chartContainerElement: HTMLDivElement) => {
-  const chartElement = document.createElement("div");
+  const chartElement = document.createElement("svg");
+  chartElement.id = CHART_ID;
   chartElement.style.width = "100%";
-  chartElement.style.marginTop = "-30px";
-  chartElement.style.position = "relative";
-  chartContainerElement.appendChild(chartElement);
+  chartElement.style.height = "350px";
+  chartElement.style.display = "block";
+  chartContainer.appendChild(chartElement);
 
   return chartElement;
 };

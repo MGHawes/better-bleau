@@ -7,7 +7,6 @@ module.exports = {
     filename: 'index.js',
     path: path.resolve(__dirname, 'dist'),
   },
-  mode: "production",
   resolve: {
     extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js"]
   },
@@ -17,8 +16,10 @@ module.exports = {
     ],
   },
   plugins: [
-    new CopyWebpackPlugin([{
-        from: "src/manifest.json",
-    }]),
+    new CopyWebpackPlugin([
+      { from: "src/manifest.json" },
+      { from: "node_modules/plottable/plottable.css" },
+      { from: "src/index.css" },
+    ]),
   ]
 };

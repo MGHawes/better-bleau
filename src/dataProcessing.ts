@@ -1,4 +1,21 @@
 import { countBy, flatMap, map, sortBy } from "lodash";
+import { IRawClimb } from "./domInteraction";
+
+export interface IClimb extends IRawClimb {
+  gradeCategory: string;
+  climbTypes: string[];
+}
+export const processRawClimbs = (rawClimbs: IRawClimb[]): IClimb[] => {
+  const climbsWithGradeAndTypes = rawClimbs.map(
+    (climb) => ({
+      ...climb,
+      gradeCategory: parseGradeText(climb.gradeText),
+      climbTypes: parseClimbTypesString(climb.climbTypesString),
+    }
+  ));
+
+  return climbsWithGradeAndTypes;
+};
 
 export const getTopNClimbTypes = (
     climbTypesByGrade: { [grade: string]: string[] },

@@ -13,9 +13,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "apexcharts": "^3.11.3",
     "awesome-typescript-loader": "^5.2.1",
     "lodash-es": "^4.17.15",
+    "plottable": "^3.8.6",
     "source-map-loader": "^0.2.4",
     "typescript": "^3.7.4"
   },

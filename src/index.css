@@ -1,0 +1,5 @@
+/* ToDo port inline css here */
+
+.tick-label-container .text-line {
+  text-transform: capitalize;
+}

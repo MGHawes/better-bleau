@@ -21,7 +21,8 @@
         "*://bleau.info/ticklist/*",
         "*://bleau.info/contribute/*"
       ],
-      "js": ["index.js"]
+      "js": ["index.js"],
+      "css": ["plottable.css", "index.css"]
     }
   ],
   "manifest_version": 2,
