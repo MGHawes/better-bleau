@@ -3,3 +3,7 @@
 .tick-label-container .text-line {
   text-transform: capitalize;
 }
+
+.plottable .xy-plot .content {
+  cursor: pointer;
+}
