@@ -25,6 +25,12 @@
       "css": ["plottable.css", "index.css"]
     }
   ],
+  "icons": {
+    "16": "better-bleau-logo-16.png",
+    "32": "better-bleau-logo-32.png",
+    "48": "better-bleau-logo-48.png",
+    "128": "better-bleau-logo-128.png"
+  },
   "manifest_version": 2,
   "permissions": ["activeTab", "declarativeContent"]
 }

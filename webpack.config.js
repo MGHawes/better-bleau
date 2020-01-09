@@ -21,6 +21,7 @@ module.exports = {
       { from: "src/manifest.json" },
       { from: "node_modules/plottable/plottable.css" },
       { from: "src/index.css" },
+      { from: "assets/*", flatten: true },
     ]),
   ]
 };
