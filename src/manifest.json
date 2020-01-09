@@ -1,6 +1,7 @@
 {
   "name": "Better Bleau",
-  "version": "0.0.1",
+  "short_name": "Better Bleau",
+  "version": "0.0.2",
   "description": "A chrome extension to add grade and problem type breakdown charts to bleau.info!",
   "content_scripts": [
     {
