@@ -1,6 +1,6 @@
 import { forEach, keys, reverse } from "lodash-es";
 import * as Plottable from "plottable";
-import { IStateSetter, IState } from "./generateChart";
+import { IState, IStateSetter } from "./generateChart";
 
 export const initializeChart = (
   chartElement: HTMLElement,
@@ -33,7 +33,7 @@ export const initializeChart = (
       [null, xAxis],
     ]);
 
-    registerInteractions({ plot, yAxis, legend }, setState)
+    registerInteractions({ plot, yAxis, legend }, setState);
 
     table.renderTo(chartElement);
 
@@ -43,8 +43,12 @@ export const initializeChart = (
 };
 
 const registerInteractions = (
-  { plot, yAxis, legend }: { plot: Plottable.Plots.Bar<any, any>, yAxis: Plottable.Axis<string>, legend: Plottable.Components.Legend },
-  setState: IStateSetter
+  { plot, yAxis, legend }: {
+    plot: Plottable.Plots.Bar<any, any>,
+    yAxis: Plottable.Axis<string>,
+    legend: Plottable.Components.Legend,
+  },
+  setState: IStateSetter,
   ) => {
     const plotClickInteraction = new Plottable.Interactions.Click();
     plotClickInteraction.onClick((point) => {
@@ -59,10 +63,9 @@ const registerInteractions = (
     });
     plotClickInteraction.attachTo(plot);
 
-    
     const axisClickInteraction = new Plottable.Interactions.Click();
     axisClickInteraction.onClick((_, event) => {
-      const clickedLabel = yAxis.tickLabelDataOnElement(event.target as Element)
+      const clickedLabel = yAxis.tickLabelDataOnElement(event.target as Element);
 
       if (clickedLabel != null && typeof(clickedLabel) === "string") {
         setState((prevState: IState) => ({ selection: [...prevState.selection, { climbType: clickedLabel }] }));
@@ -75,9 +78,9 @@ const registerInteractions = (
       const clickedEntities = legend.entitiesAt(point);
 
       if (clickedEntities.length > 0) {
-        setState((prevState: IState) => ({ selection: [...prevState.selection, { gradeCategory: clickedEntities[0].datum }] }));
+        setState((prevState: IState) =>
+          ({ selection: [...prevState.selection, { gradeCategory: clickedEntities[0].datum }] }));
       }
     });
     legendClickInteraction.attachTo(legend);
-}
-  
+};

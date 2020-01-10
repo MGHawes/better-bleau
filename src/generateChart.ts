@@ -1,5 +1,6 @@
-import { forEach, isEqual, countBy, flatMap, groupBy, mapValues, some } from "lodash-es";
+import { countBy, flatMap, forEach, groupBy, isEqual, mapValues, some } from "lodash-es";
 import * as Plottable from "plottable";
+import { initializeChart } from "./charting";
 import { getTopNClimbTypes, IClimb, parseGradeText } from "./dataProcessing";
 import {
   createChartElement,
@@ -8,7 +9,6 @@ import {
   getRightAndLeftColumns,
   IGradeHeader,
 } from "./domInteraction";
-import { initializeChart } from "./charting";
 
 const NUM_CLIMB_TYPES_TO_SHOW = 10;
 
@@ -59,7 +59,7 @@ const updateVisibleClimbs = (
   climbs: IClimb[],
   rawGradeHeaders: IGradeHeader[],
   ) => {
-    const selectedGrades = new Set(selection.map((p) => p.gradeCategory).filter(g => g != undefined));
+    const selectedGrades = new Set(selection.map((p) => p.gradeCategory).filter((g) => g != null));
     const selectedGradeTypePairs = new Set(
       selection.map(({ gradeCategory, climbType }) => [gradeCategory, climbType].toString()));
 
@@ -103,13 +103,13 @@ const updateChartDatasets = (
 };
 
 const testIsSelected = (gradeTypePair: [string, string], selectedGradeTypePairs: Set<string>) => {
-  const [grade, type] = gradeTypePair
-  const isTypeSelected = selectedGradeTypePairs.has([null, type].toString())
-  const isGradeSelected = selectedGradeTypePairs.has([grade, null].toString())
-  const isPairSelected = selectedGradeTypePairs.has(gradeTypePair.toString())
-  
+  const [grade, type] = gradeTypePair;
+  const isTypeSelected = selectedGradeTypePairs.has([null, type].toString());
+  const isGradeSelected = selectedGradeTypePairs.has([grade, null].toString());
+  const isPairSelected = selectedGradeTypePairs.has(gradeTypePair.toString());
+
   return isTypeSelected || isGradeSelected || isPairSelected;
-}
+};
 
 interface IDataPoint {
   gradeCategory: string;
