@@ -1,5 +1,4 @@
-import { countBy, flatMap, groupBy, mapValues, some } from "lodash";
-import { forEach, isEqual, keys, reverse } from "lodash-es";
+import { forEach, isEqual, countBy, flatMap, groupBy, mapValues, some } from "lodash-es";
 import * as Plottable from "plottable";
 import { getTopNClimbTypes, IClimb, parseGradeText } from "./dataProcessing";
 import {
@@ -9,13 +8,18 @@ import {
   getRightAndLeftColumns,
   IGradeHeader,
 } from "./domInteraction";
+import { initializeChart } from "./charting";
 
 const NUM_CLIMB_TYPES_TO_SHOW = 10;
 
-interface IState {
-  selection: ISelectedBar[];
+interface ISelection {
+  gradeCategory?: string;
+  climbType?: string;
 }
-type IStateSetter = (newStateOrUpdater: IState | ((prevState: IState) => IState)) => void;
+export interface IState {
+  selection: ISelection[];
+}
+export type IStateSetter = (newStateOrUpdater: IState | ((prevState: IState) => IState)) => void;
 export function generateChart() {
   const [leftColumn, rightColumn] = getRightAndLeftColumns();
   const chartElement = createChartElement(rightColumn);
@@ -55,7 +59,7 @@ const updateVisibleClimbs = (
   climbs: IClimb[],
   rawGradeHeaders: IGradeHeader[],
   ) => {
-    const selectedGrades = new Set(selection.map((p) => p.gradeCategory));
+    const selectedGrades = new Set(selection.map((p) => p.gradeCategory).filter(g => g != undefined));
     const selectedGradeTypePairs = new Set(
       selection.map(({ gradeCategory, climbType }) => [gradeCategory, climbType].toString()));
 
@@ -63,10 +67,10 @@ const updateVisibleClimbs = (
       ? () => true
       : (climb: IClimb) => some(
         climb.climbTypes.map(
-          (climbType) => selectedGradeTypePairs.has([climb.gradeCategory, climbType].toString()),
+          (climbType) => testIsSelected([climb.gradeCategory, climbType], selectedGradeTypePairs),
         ));
 
-    const isClimbHeaderSelected = selectedGradeTypePairs.size === 0
+    const isClimbHeaderSelected = selectedGrades.size === 0
       ? () => true
       : (header: IGradeHeader) => selectedGrades.has(parseGradeText(header.gradeText));
 
@@ -92,11 +96,20 @@ const updateChartDatasets = (
 
     forEach(chartDatasets, (dataset: Plottable.Dataset) => {
       const newData = dataset.data().map(
-        (d) => ({ ...d, isSelected: selectedGradeTypePairs.has([d.gradeCategory, d.climbType].toString()) }));
+        (d) => ({ ...d, isSelected: testIsSelected([d.gradeCategory, d.climbType], selectedGradeTypePairs) }));
 
       dataset.data(newData);
     });
 };
+
+const testIsSelected = (gradeTypePair: [string, string], selectedGradeTypePairs: Set<string>) => {
+  const [grade, type] = gradeTypePair
+  const isTypeSelected = selectedGradeTypePairs.has([null, type].toString())
+  const isGradeSelected = selectedGradeTypePairs.has([grade, null].toString())
+  const isPairSelected = selectedGradeTypePairs.has(gradeTypePair.toString())
+  
+  return isTypeSelected || isGradeSelected || isPairSelected;
+}
 
 interface IDataPoint {
   gradeCategory: string;
@@ -104,62 +117,6 @@ interface IDataPoint {
   count: number;
   isSelected: boolean;
 }
-interface ISelectedBar {
-  gradeCategory: string;
-  climbType: string;
-}
-const initializeChart = (
-  chartElement: HTMLElement,
-  datasets: { [gradeCategory: string]: Plottable.Dataset },
-  setState: IStateSetter,
-  ) => {
-
-    const xScale = new Plottable.Scales.Linear();
-    const xAxis = new Plottable.Axes.Numeric(xScale, "bottom");
-    const yScale = new Plottable.Scales.Category();
-    const yAxis = new Plottable.Axes.Category(yScale, "left");
-    const colorScale = new Plottable.Scales.Color();
-    const sortedGradeCategories = reverse(keys(datasets)); // Alphabetical is sufficient
-    colorScale.domain(sortedGradeCategories);
-    colorScale.range(["#87c293", "#a0d31c", "#ffd212", "#ffb745", "#ff8972"]);
-
-    const plot = new Plottable.Plots.StackedBar("horizontal");
-    forEach(sortedGradeCategories, (gradeCategory) => plot.addDataset(datasets[gradeCategory]));
-
-    plot
-      .x((d) => d.count, xScale)
-      .y((d) => d.climbType, yScale)
-      .labelsEnabled(true)
-      .attr("fill", ({ gradeCategory }) => gradeCategory, colorScale)
-      .attr("opacity", ({ isSelected }) => isSelected ? 1 : 0.5);
-
-    const clickInteraction = new Plottable.Interactions.Click();
-    clickInteraction.onClick((point) => {
-      const clickedEntities = plot.entitiesAt(point);
-
-      if (clickedEntities.length === 0) {
-        setState({ selection: [] });
-        return;
-      }
-      const { climbType, gradeCategory } = plot.entitiesAt(point)[0].datum;
-      setState((prevState: IState) => ({ selection: [...prevState.selection, { gradeCategory, climbType }] }));
-    });
-    clickInteraction.attachTo(plot);
-
-    const legend = new Plottable.Components.Legend(colorScale).maxEntriesPerRow(Infinity);
-    const table = new Plottable.Components.Table([
-      [null, legend],
-      [yAxis,  plot],
-      [null, xAxis],
-    ]);
-
-    table.renderTo(chartElement);
-
-    window.addEventListener("resize", () => {
-      plot.redraw();
-    });
-};
-
 interface IChartData {
   [gradeCategory: string]: IDataPoint[];
 }

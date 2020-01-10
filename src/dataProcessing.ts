@@ -1,4 +1,4 @@
-import { countBy, flatMap, map, sortBy } from "lodash";
+import { countBy, flatMap, map, sortBy } from "lodash-es";
 import { IRawClimb } from "./domInteraction";
 
 export interface IClimb extends IRawClimb {

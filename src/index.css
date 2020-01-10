@@ -4,6 +4,8 @@
   text-transform: capitalize;
 }
 
-.plottable .xy-plot .content {
+.plottable .xy-plot .content,
+.plottable .component.legend,
+.plottable .component.axis.y-axis.category-axis .tick-label {
   cursor: pointer;
 }
