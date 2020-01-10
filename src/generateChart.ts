@@ -121,8 +121,9 @@ interface IChartData {
   [gradeCategory: string]: IDataPoint[];
 }
 const getChartDatasets = (climbs: IClimb[], numClimbsTypesToShow: number): IChartData => {
+  const climbsWithTypes = climbs.filter(c => c.climbTypes.length > 0)
   const climbTypesByGrade = mapValues(
-    groupBy(climbs, (c) => c.gradeCategory),
+    groupBy(climbsWithTypes, (c) => c.gradeCategory),
     (groupedClimbs: IClimb[]) => flatMap(groupedClimbs, (climb) => climb.climbTypes),
   );
 

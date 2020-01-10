@@ -30,7 +30,8 @@ export const getTopNClimbTypes = (
     return topNClimbTypes;
 };
 
-export const parseClimbTypesString = (typesString: string): string[] => typesString.split(",").map(parseClimbType);
+export const parseClimbTypesString = (typesString: string): string[] => 
+  typesString.split(",").map(parseClimbType).filter(t => t.length > 0);
 
 export const parseGradeText = (gradeText: string): string => {
   const grade = Number(gradeText.trim().slice(0, 1));
