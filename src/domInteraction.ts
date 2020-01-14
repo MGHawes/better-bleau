@@ -43,14 +43,15 @@ const extractClimbTypesString = (elem: Element): string => {
   return typesElem.innerText;
 };
 
-export const getRightAndLeftColumns = (): [HTMLDivElement, HTMLDivElement] => {
-  const mainContent = document.querySelector<HTMLDivElement>("main div.container");
+export const getRightAndLeftColumns = (doc: Document = document): [HTMLDivElement, HTMLDivElement] => {
+  const mainContent = doc.querySelector<HTMLDivElement>("main div.container");
   if (mainContent == null) {
     throw new Error("Couldn't find main container element");
   }
   const rightColumn = mainContent.querySelector<HTMLDivElement>(".pull-right");
   const leftColumn = mainContent.querySelector<HTMLDivElement>(":not(.pull-right).col-md-6");
   if (rightColumn == null || leftColumn == null) {
+    // ToDo: Sometimes the right column doesn't exist so we should create it
     throw new Error("Couldn't find left right columns");
   }
 
@@ -69,11 +70,6 @@ export const createChartElement = (rightColumn: Element): HTMLElement => {
     } else {
       rightColumn.insertBefore(chartContainer, rightColumn.children[1]);
     }
-  }
-
-  const oldElement = document.getElementById(CHART_ID);
-  if (oldElement) {
-    oldElement.remove();
   }
 
   const chartElement = document.createElement("svg");
