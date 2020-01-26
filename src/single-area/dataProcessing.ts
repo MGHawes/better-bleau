@@ -22,7 +22,7 @@ export const getTopNClimbTypes = (
     climbsWithTypes: IClimb[],
     n: number,
   ): ITopClimbTypesWithCounts => {
-    const allClimbTypeCounts = countBy(flatMap(climbsWithTypes, c => c.climbTypes));
+    const allClimbTypeCounts = countBy(flatMap(climbsWithTypes, (c) => c.climbTypes));
     const topNClimbTypes = sortBy(
       map(allClimbTypeCounts, (v: number, k: string) => [k, v] as [string, number]),
       ([, v]) => -v,
@@ -31,8 +31,8 @@ export const getTopNClimbTypes = (
     return topNClimbTypes;
 };
 
-export const parseClimbTypesString = (typesString: string): string[] => 
-  typesString.split(",").map(parseClimbType).filter(t => t.length > 0);
+export const parseClimbTypesString = (typesString: string): string[] =>
+  typesString.split(",").map(parseClimbType).filter((t) => t.length > 0);
 
 export const parseGradeText = (gradeText: string): string => {
   const grade = Number(gradeText.trim().slice(0, 1));

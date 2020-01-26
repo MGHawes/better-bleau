@@ -1,8 +1,13 @@
-import { groupBy, mapValues, maxBy, ceil, range, floor } from "lodash-es"
-import * as Plottable from "plottable";
 import * as d3 from "d3";
-import { extractAreaLinksFromDom, extractSingleAreaData, ISingleAreaData, createPerAreaMetricsSubtextElement, createChartElement } from "./domInteraction";
-
+import { ceil, floor, groupBy, mapValues, maxBy, range } from "lodash-es";
+import * as Plottable from "plottable";
+import {
+  createChartElement,
+  createPerAreaMetricsSubtextElement,
+  extractAreaLinksFromDom,
+  extractSingleAreaData,
+  ISingleAreaData,
+} from "./domInteraction";
 
 export interface IAreaMetric extends ISingleAreaData {
   element: Element;
@@ -11,36 +16,35 @@ interface IError {
   error: any;
   isError: true;
 }
-const isNotError = (v: IAreaMetric | IError): v is IAreaMetric => v.hasOwnProperty("isError") && (v as IError).isError === true
+const isNotError = (v: IAreaMetric | IError): v is IAreaMetric =>
+  v.hasOwnProperty("isError") && (v as IError).isError === true;
 
 export const generateAreasOverviewCharts = () => {
-  const areaElements = extractAreaLinksFromDom()
-  const areaMetricsPromises: Promise<IAreaMetric | IError>[] = areaElements.map(({ element, href }) => 
+  const areaElements = extractAreaLinksFromDom();
+  const areaMetricsPromises: Array<Promise<IAreaMetric | IError>> = areaElements.map(({ element, href }) =>
     fetch(href)
-      .then(resp => resp.text())
-      .then(htmlString => {
-          var parser = new DOMParser();
-          var doc = parser.parseFromString(htmlString, "text/html");
-          
+      .then((resp) => resp.text())
+      .then((htmlString) => {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(htmlString, "text/html");
+
           return { ...extractSingleAreaData(doc), element };
       })
-      .catch(error => ({ error, element, isError: true as const }))
-  )
+      .catch((error) => ({ error, element, isError: true as const })),
+  );
 
-  Promise.all(areaMetricsPromises).then(maybeAreaMetrics => {
-    const areaMetrics = maybeAreaMetrics.filter<IAreaMetric>(isNotError)
+  Promise.all(areaMetricsPromises).then((maybeAreaMetrics) => {
+    const areaMetrics = maybeAreaMetrics.filter<IAreaMetric>(isNotError);
 
-    areaMetrics.forEach(createPerAreaMetricsSubtextElement)
+    areaMetrics.forEach(createPerAreaMetricsSubtextElement);
 
-    const distributionChartElement = createChartElement()
-    
-    console.log(areaMetrics)
-    console.log(JSON.stringify(areaMetrics))
-    const buckets = bucketData(areaMetrics)
-    console.log(buckets)
-    initializeChart(buckets, distributionChartElement)
+    const distributionChartElement = createChartElement();
+
+    const buckets = bucketData(areaMetrics);
+
+    initializeChart(buckets, distributionChartElement);
   });
-}
+};
 
 const NUM_BUCKETS = 50;
 interface IBucket {
@@ -48,40 +52,39 @@ interface IBucket {
   numClimbs: number;
 }
 const bucketData = (areaMetrics: IAreaMetric[]): IBucket[] => {
-  const stepsize = ceil(maxBy(areaMetrics, b => b.numClimbs).numClimbs / NUM_BUCKETS)
+  const stepsize = ceil(maxBy(areaMetrics, (b) => b.numClimbs).numClimbs / NUM_BUCKETS);
   const numClimbsByBucket = mapValues(
-    groupBy(areaMetrics, m => floor(m.numClimbs / stepsize)),
-    metrics => metrics.length
-  )
+    groupBy(areaMetrics, (m) => floor(m.numClimbs / stepsize)),
+    (metrics) => metrics.length,
+  );
 
   const buckets = range(0, (NUM_BUCKETS - 1) * stepsize, stepsize)
-    .map((lowerBound, i) => ({ midpoint: lowerBound + stepsize / 2, numClimbs: numClimbsByBucket[i] || 0 }))
+    .map((lowerBound, i) => ({ midpoint: lowerBound + stepsize / 2, numClimbs: numClimbsByBucket[i] || 0 }));
 
   return buckets;
-}
+};
 
 const initializeChart = (buckets: IBucket[], chartElement: HTMLElement) => {
-  var xScale = new Plottable.Scales.Linear();
-  var yScale = new Plottable.Scales.Linear();
-  var xAxis = new Plottable.Axes.Numeric(xScale, "bottom");
-  var yAxis = new Plottable.Axes.Numeric(yScale, "left");
+  const xScale = new Plottable.Scales.Linear();
+  const yScale = new Plottable.Scales.Linear();
+  const xAxis = new Plottable.Axes.Numeric(xScale, "bottom");
+  const yAxis = new Plottable.Axes.Numeric(yScale, "left");
 
-  var plot = new Plottable.Plots.Bar()
+  const plot = new Plottable.Plots.Bar()
     .x((d: IBucket) => d.midpoint, xScale)
     .y((d: IBucket) => d.numClimbs, yScale)
     .addDataset(new Plottable.Dataset(buckets));
 
-  var dragbox = new Plottable.Components.XDragBoxLayer();
-  dragbox.onDrag(function(box) {
+  const dragbox = new Plottable.Components.XDragBoxLayer();
+  dragbox.onDrag((box) => {
     plot.selections().attr("fill", "#5279c7");
-    plot.entitiesIn(box).forEach(function(entity) {
-      console.log(entity)
+    plot.entitiesIn(box).forEach((entity) => {
       entity.selection.attr("fill", "#FD373E");
     });
   });
 
   new Plottable.Components.Table([
     [yAxis, new Plottable.Components.Group([dragbox, plot])],
-    [null, xAxis]
+    [null, xAxis],
   ]).renderTo(chartElement);
-}
+};

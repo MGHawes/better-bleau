@@ -1,4 +1,4 @@
-import { countBy, flatMap, forEach, groupBy, isEqual, mapValues, some, fromPairs } from "lodash-es";
+import { countBy, flatMap, forEach, fromPairs, groupBy, isEqual, mapValues, some } from "lodash-es";
 import * as Plottable from "plottable";
 import { initializeChart } from "./charting";
 import { getTopNClimbTypes, IClimb, parseGradeText } from "./dataProcessing";
@@ -122,7 +122,7 @@ interface IChartData {
   [gradeCategory: string]: IDataPoint[];
 }
 const getChartDatasets = (climbs: IClimb[], numClimbsTypesToShow: number): IChartData => {
-  const climbsWithTypes = climbs.filter(c => c.climbTypes.length > 0)
+  const climbsWithTypes = climbs.filter((c) => c.climbTypes.length > 0);
   const climbTypesByGrade = mapValues(
     groupBy(climbsWithTypes, (c) => c.gradeCategory),
     (groupedClimbs: IClimb[]) => flatMap(groupedClimbs, (climb) => climb.climbTypes),
@@ -145,5 +145,5 @@ const getChartDatasets = (climbs: IClimb[], numClimbsTypesToShow: number): IChar
         })),
   );
 
-  return fromPairs(GRADE_CATEGORIES.map(gradeCategory => [gradeCategory, datasets[gradeCategory] || []]));
+  return fromPairs(GRADE_CATEGORIES.map((gradeCategory) => [gradeCategory, datasets[gradeCategory] || []]));
 };

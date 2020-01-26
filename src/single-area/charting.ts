@@ -1,6 +1,6 @@
-import { forEach, keys, reverse, isEqual } from "lodash-es";
+import { forEach, isEqual, keys, reverse } from "lodash-es";
 import * as Plottable from "plottable";
-import { IState, IStateSetter, GRADE_CATEGORIES } from "./generateSingleAreaChart";
+import { GRADE_CATEGORIES, IState, IStateSetter } from "./generateSingleAreaChart";
 
 export const initializeChart = (
   chartElement: HTMLElement,
