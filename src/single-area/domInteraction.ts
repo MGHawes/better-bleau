@@ -58,25 +58,23 @@ export const getRightAndLeftColumns = (doc: Document = document): [HTMLDivElemen
   return [leftColumn, rightColumn];
 };
 
-let chartContainer;
 export const createChartElement = (rightColumn: Element): HTMLElement => {
-  if (!chartContainer) {
-    chartContainer = document.createElement("div");
-    chartContainer.className = "row";
-    chartContainer.style.width = "100%";
+  const chartContainer = document.createElement("div");
+  chartContainer.className = "row";
+  chartContainer.style.width = "100%";
 
-    if (rightColumn.children.length < 2) {
-      rightColumn.appendChild(chartContainer);
-    } else {
-      rightColumn.insertBefore(chartContainer, rightColumn.children[1]);
-    }
+  if (rightColumn.children.length < 2) {
+    rightColumn.appendChild(chartContainer);
+  } else {
+    rightColumn.insertBefore(chartContainer, rightColumn.children[1]);
   }
 
   const chartElement = document.createElement("svg");
   chartElement.id = CHART_ID;
   chartElement.style.width = "100%";
-  chartElement.style.height = "350px";
+  chartElement.style.height = "500px";
   chartElement.style.display = "block";
+  chartElement.style.marginBottom = "20px";
   chartContainer.appendChild(chartElement);
 
   return chartElement;

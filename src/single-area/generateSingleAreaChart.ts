@@ -1,4 +1,4 @@
-import { countBy, flatMap, forEach, groupBy, isEqual, mapValues, some } from "lodash-es";
+import { countBy, flatMap, forEach, groupBy, isEqual, mapValues, some, fromPairs } from "lodash-es";
 import * as Plottable from "plottable";
 import { initializeChart } from "./charting";
 import { getTopNClimbTypes, IClimb, parseGradeText } from "./dataProcessing";
@@ -11,6 +11,7 @@ import {
 } from "./domInteraction";
 
 const NUM_CLIMB_TYPES_TO_SHOW = 10;
+export const GRADE_CATEGORIES = ["< 5", "5s", "6s", "7s", "8s"];
 
 interface ISelection {
   gradeCategory?: string;
@@ -20,7 +21,7 @@ export interface IState {
   selection: ISelection[];
 }
 export type IStateSetter = (newStateOrUpdater: IState | ((prevState: IState) => IState)) => void;
-export function generateChart() {
+export function generateSingleAreaChart() {
   const [leftColumn, rightColumn] = getRightAndLeftColumns();
   const chartElement = createChartElement(rightColumn);
 
@@ -85,7 +86,7 @@ const updateChartDatasets = (
   ) => {
     if (selection.length === 0) {
       forEach(chartDatasets, (dataset: Plottable.Dataset) => {
-        const newData = dataset.data().map((d) => ({ ...d, isSelected: true }));
+        const newData = dataset.data().map((d) => ({ ...d, isSelected: null }));
         dataset.data(newData);
       });
       return;
@@ -115,7 +116,7 @@ interface IDataPoint {
   gradeCategory: string;
   climbType: string;
   count: number;
-  isSelected: boolean;
+  isSelected: boolean | null;
 }
 interface IChartData {
   [gradeCategory: string]: IDataPoint[];
@@ -127,7 +128,7 @@ const getChartDatasets = (climbs: IClimb[], numClimbsTypesToShow: number): IChar
     (groupedClimbs: IClimb[]) => flatMap(groupedClimbs, (climb) => climb.climbTypes),
   );
 
-  const topClimbTypes = getTopNClimbTypes(climbTypesByGrade, numClimbsTypesToShow);
+  const topClimbTypes = getTopNClimbTypes(climbsWithTypes, numClimbsTypesToShow);
 
   const climbTypeCountsByGrade = mapValues(
     climbTypesByGrade,
@@ -139,10 +140,10 @@ const getChartDatasets = (climbs: IClimb[], numClimbsTypesToShow: number): IChar
       (countsByType, gradeCategory) => topClimbTypes.map(([climbType, _]) => ({
           climbType,
           gradeCategory,
-          isSelected: true,
+          isSelected: null,
           count: climbType.toString() in countsByType ? countsByType[climbType] : 0,
         })),
   );
 
-  return datasets;
+  return fromPairs(GRADE_CATEGORIES.map(gradeCategory => [gradeCategory, datasets[gradeCategory] || []]));
 };

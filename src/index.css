@@ -9,3 +9,16 @@
 .plottable .component.axis.y-axis.category-axis .tick-label {
   cursor: pointer;
 }
+
+.plottable .xy-plot .content rect:hover {
+  stroke: #6d6d6d;
+  opacity: 1;
+}
+
+.on-bar-label {
+  display: none;
+}
+
+.stacked-bar-label text {
+  fill: rgb(50, 49, 63);
+}

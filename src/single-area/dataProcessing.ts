@@ -17,11 +17,12 @@ export const processRawClimbs = (rawClimbs: IRawClimb[]): IClimb[] => {
   return climbsWithGradeAndTypes;
 };
 
+export type ITopClimbTypesWithCounts = Array<[string, number]>;
 export const getTopNClimbTypes = (
-    climbTypesByGrade: { [grade: string]: string[] },
+    climbsWithTypes: IClimb[],
     n: number,
-  ): Array<[string, number]> => {
-    const allClimbTypeCounts = countBy(flatMap(climbTypesByGrade));
+  ): ITopClimbTypesWithCounts => {
+    const allClimbTypeCounts = countBy(flatMap(climbsWithTypes, c => c.climbTypes));
     const topNClimbTypes = sortBy(
       map(allClimbTypeCounts, (v: number, k: string) => [k, v] as [string, number]),
       ([, v]) => -v,

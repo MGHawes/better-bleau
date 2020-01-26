@@ -1,6 +1,6 @@
-import { forEach, keys, reverse } from "lodash-es";
+import { forEach, keys, reverse, isEqual } from "lodash-es";
 import * as Plottable from "plottable";
-import { IState, IStateSetter } from "./generateChart";
+import { IState, IStateSetter, GRADE_CATEGORIES } from "./generateSingleAreaChart";
 
 export const initializeChart = (
   chartElement: HTMLElement,
@@ -8,29 +8,28 @@ export const initializeChart = (
   setState: IStateSetter,
   ) => {
     const xScale = new Plottable.Scales.Linear();
-    const xAxis = new Plottable.Axes.Numeric(xScale, "bottom");
     const yScale = new Plottable.Scales.Category();
     const yAxis = new Plottable.Axes.Category(yScale, "left");
     const colorScale = new Plottable.Scales.Color();
-    const sortedGradeCategories = reverse(keys(datasets)); // Alphabetical is sufficient
-    colorScale.domain(sortedGradeCategories);
+
+    colorScale.domain(GRADE_CATEGORIES);
     colorScale.range(["#87c293", "#a0d31c", "#ffd212", "#ffb745", "#ff8972"]);
 
     const plot = new Plottable.Plots.StackedBar("horizontal");
-    forEach(sortedGradeCategories, (gradeCategory) => plot.addDataset(datasets[gradeCategory]));
+    forEach(GRADE_CATEGORIES, (gradeCategory) => plot.addDataset(datasets[gradeCategory]));
 
     plot
       .x((d) => d.count, xScale)
       .y((d) => d.climbType, yScale)
       .labelsEnabled(true)
       .attr("fill", ({ gradeCategory }) => gradeCategory, colorScale)
-      .attr("opacity", ({ isSelected }) => isSelected ? 1 : 0.5);
+      .attr("opacity", ({ isSelected }) => isSelected === true || isSelected === null ? 1 : 0.5)
+      .attr("stroke", ({ isSelected }) => isSelected === true ? "#6d6d6d" : "none");
 
     const legend = new Plottable.Components.Legend(colorScale).maxEntriesPerRow(Infinity);
     const table = new Plottable.Components.Table([
       [null, legend],
       [yAxis,  plot],
-      [null, xAxis],
     ]);
 
     registerInteractions({ plot, yAxis, legend }, setState);
